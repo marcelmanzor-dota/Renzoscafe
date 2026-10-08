@@ -6,9 +6,9 @@
    {
      "count": 180,                      // frames per set
      "ext": "webp",
-     "desktop": { "dir": "d/", "focusX": 0.62, "focusY": 0.5 },   // 16:9 frames
-     "mobile":  { "dir": "m/", "focusX": 0.5,  "focusY": 0.42 },  // optional 9:16 frames
-     "steps": [0.03, 0.14, 0.29, 0.425, 0.545, 0.635, 0.775, 0.875]  // where each caption appears
+     "desktop": { "dir": "d/", "focusX": 0.5, "focusY": 0.5, "steps": [...] },  // 16:9 frames
+     "mobile":  { "dir": "m/", "focusX": 0.5, "focusY": 0.5, "steps": [...] },  // optional 9:16 frames
+     "steps": [0.03, 0.14, 0.29, 0.425, 0.545, 0.635, 0.775, 0.875]  // fallback: where each caption appears
    }
    Frames are named 0001.webp, 0002.webp ... inside each dir. */
 window.FrameScrub = async function (cv, base) {
@@ -89,5 +89,8 @@ window.FrameScrub = async function (cv, base) {
   }
 
   layout();
-  return { layout, render, buildSprites() {}, ready: firstReady, steps: m.steps };
+  return {
+    layout, render, buildSprites() {}, ready: firstReady,
+    get steps() { return (set && set.steps) || m.steps; }, // caption timing for whichever video is showing
+  };
 };

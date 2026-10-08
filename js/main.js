@@ -58,7 +58,7 @@ const isMobile = () => innerWidth < 820;
 
 let sceneResolve; const sceneReady = new Promise(r => (sceneResolve = r));
 window.FrameScrub(cv, "assets/hero/")
-  .then(s => { scene = s; cv.parentElement.classList.add("real"); if (Array.isArray(s.steps) && s.steps.length === 8) STEP_AT = s.steps; s.ready.then(sceneResolve); })
+  .then(s => { scene = s; cv.parentElement.classList.add("real"); s.ready.then(sceneResolve); })
   .catch(() => { scene = window.ProceduralPizza(cv, reduce); scene.layout(); scene.buildSprites(); sceneResolve(); })
   .finally(start);
 
@@ -95,6 +95,8 @@ function setStep(n) {
   progress.classList.toggle("on", n > 0);
 }
 function updateUI(p) {
+  const st = scene && scene.steps;
+  if (Array.isArray(st) && st.length === 8) STEP_AT = st;
   const h = smooth(.002, .03, p);
   hero.style.opacity = 1 - h;
   hero.style.transform = isMobile() ? `translateY(${-h * 30}px)` : `translateY(calc(-46% - ${h * 40}px))`;
