@@ -5,7 +5,13 @@
 // Photos for the zoom gallery between the menu and "Our story" (exactly 7 looks best; the first is the centre one).
 // Leave empty to hide the section.
 const GALLERY = [
-  // { src: "assets/img/gallery-1.webp", alt: "Spicy Renzo fresh from the oven" },
+  { src: "assets/img/gallery-1.webp", alt: "A pizza sliding into the wood-fired oven" },
+  { src: "assets/img/gallery-2.webp", alt: "The dining room set for dinner" },
+  { src: "assets/img/gallery-3.webp", alt: "Homemade ricotta gnocchi in vodka sauce" },
+  { src: "assets/img/gallery-4.webp", alt: "Hands stretching pizza dough" },
+  { src: "assets/img/gallery-5.webp", alt: "Calamari with hot cherry peppers" },
+  { src: "assets/img/gallery-6.webp", alt: "A slice pulled from the pie with stretching mozzarella" },
+  { src: "assets/img/gallery-7.webp", alt: "Fresh tomatoes, mozzarella, basil and hot honey" },
 ];
 // Where each build-scene caption appears (0 = top of the scene, 1 = bottom). Real video frames can override this in their manifest.
 let STEP_AT = [.03, .14, .29, .425, .545, .635, .775, .875];
@@ -139,17 +145,24 @@ if (motion) {
 // stars
 $$(".stars").forEach(s => { s.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>'.repeat(5); });
 
-// zoom gallery
+// zoom gallery: only appears once its first photo has actually loaded
 const gallery = $("#gallery");
-if (GALLERY.length) {
+function buildGallery() {
   const stage = gallery.querySelector(".zoom-stage");
-  GALLERY.slice(0, 7).forEach(({ src, alt }, i) => {
+  GALLERY.slice(0, 7).forEach(({ src, alt }) => {
     const layer = document.createElement("div"); layer.className = "zl";
-    layer.innerHTML = `<figure><img src="${src}" alt="${alt || ""}" ${i ? 'loading="lazy"' : ""}></figure>`;
+    layer.innerHTML = `<figure><img src="${src}" alt="${alt || ""}" decoding="async"></figure>`;
     stage.insertBefore(layer, stage.querySelector(".zoom-copy"));
   });
   gallery.hidden = false;
+  if (!motion) return;
+  const scales = [4, 5, 6, 5, 6, 8, 9];
+  const tl = G.timeline({ scrollTrigger: { trigger: gallery, start: "top top", end: "bottom bottom", scrub: true } });
+  $$(".zl").forEach((l, i) => tl.to(l, { scale: scales[i % 7], ease: "none", duration: 1 }, 0));
+  tl.to(".zoom-copy", { opacity: 1, duration: .25, ease: "none" }, .62).to(".zoom-stage", { "--shade": 1, duration: .3, ease: "none" }, .55);
+  ST.sort(); ST.refresh();
 }
+if (GALLERY.length) { const probe = new Image(); probe.onload = buildGallery; probe.src = GALLERY[0].src; }
 
 if (motion) {
   // nav: progress bar for the whole page, tuck away while scrolling down
@@ -213,14 +226,6 @@ if (motion) {
   addEventListener("resize", () => window.__movePill($('.tab[aria-selected="true"]'), true));
   G.set("#p-pizza .row", { autoAlpha: 0, y: 30 });
   ST.batch("#p-pizza .row", { start: "top 92%", once: true, onEnter: els => G.to(els, { autoAlpha: 1, y: 0, duration: .8, ease: "expo.out", stagger: .06 }) });
-
-  // zoom gallery (ported from the 21st.dev Zoom Parallax component)
-  if (GALLERY.length) {
-    const scales = [4, 5, 6, 5, 6, 8, 9];
-    const tl = G.timeline({ scrollTrigger: { trigger: gallery, start: "top top", end: "bottom bottom", scrub: true } });
-    $$(".zl").forEach((l, i) => tl.to(l, { scale: scales[i % 7], ease: "none", duration: 1 }, 0));
-    tl.to(".zoom-copy", { opacity: 1, duration: .25, ease: "none" }, .62).to(".zoom-stage", { "--shade": 1, duration: .3, ease: "none" }, .55);
-  }
 
   // our story: section rises like a card, outlined type drifts behind, numbers count up
   G.fromTo(".about", { scale: .94, borderRadius: isMobile() ? 28 : 48 }, { scale: 1, borderRadius: 0, ease: "none", scrollTrigger: { trigger: ".about", start: "top bottom", end: "top 30%", scrub: true } });

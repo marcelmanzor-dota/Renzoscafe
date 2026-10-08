@@ -39,7 +39,9 @@ Visitors who have "reduce motion" turned on in their device settings get a calm 
 3. Optional for phones: the same in 9:16.
 4. Download the videos and run `tools/make-frames.sh hero-16x9.mp4 hero-9x16.mp4`. Commit `assets/hero/`. The site switches to the real frames automatically. If a caption shows up too early or late, nudge the `steps` numbers in `assets/hero/manifest.json`.
 
-For the zoom gallery, save seven photos in `assets/img/` and list them in `GALLERY` at the top of `js/main.js`.
+For the zoom gallery, save seven photos in `assets/img/` and list them in `GALLERY` at the top of `js/main.js`. The gallery stays hidden until its first photo loads.
+
+**Already generated:** the keyframes, both videos (16:9 and 9:16) and seven gallery photos are made. `tools/fetch-assets.sh` downloads all of them from Higgsfield, converts them to small WebP files and cuts the scroll frames, so adding them is one command.
 
 ## Put it online with GitHub Pages
 
